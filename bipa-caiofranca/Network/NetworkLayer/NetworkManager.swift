@@ -7,18 +7,6 @@
 
 import Foundation
 
-enum NetworkError: Error {
-    case badRequest
-    case unauthorized
-    case forbidden
-    case notFound
-    case serverError
-    case invalidResponse
-    case invalidURL
-    case decodingError
-    case unknown
-}
-
 protocol NetworkManagerProtocol {
     var session: URLSession { get }
     func request<T: Decodable>(endpoint: API) async throws -> T

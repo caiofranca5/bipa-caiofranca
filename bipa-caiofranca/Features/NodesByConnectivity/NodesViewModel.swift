@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 final class NodesByConnectivityViewModel: ObservableObject {
     @Published var nodes: [Node] = []
+    @Published var errorMessage: String? = nil
     
     let networkManager: NetworkManagerProtocol
     
@@ -20,9 +21,10 @@ final class NodesByConnectivityViewModel: ObservableObject {
     func fetchNodes() async {
         do {
             self.nodes = try await networkManager.request(endpoint: Mempool.nodesByConnectivity)
-            print(nodes)
+        } catch let error as NetworkError {
+            self.errorMessage = error.description
         } catch {
-            print(error.localizedDescription)
+            self.errorMessage = error.localizedDescription
         }
     }
     
