@@ -13,8 +13,8 @@ struct Node: Decodable {
     let capacity: Double?
     let firstSeen: Int?
     let updatedAt: Int?
-    let isoCode: String?
-    let subdivision: String?
+    let city: NodeLocation?
+    let country: NodeLocation?
     
     enum CodingKeys: String, CodingKey {
         case publicKey
@@ -23,8 +23,8 @@ struct Node: Decodable {
         case capacity
         case firstSeen
         case updatedAt
-        case isoCode = "iso_code"
-        case subdivision
+        case city
+        case country
     }
     
 }
