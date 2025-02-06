@@ -9,7 +9,7 @@
 
 ## Steps to run the app
 1. Clone the repository.
-2. Open the `.xcodeproj` or `.xcworkspace` file in Xcode.
+2. Open the `.xcodeproj` file in Xcode.
 3. Under **Signing & Capabilities**, change "Team" to your Apple Developer account.
 4. Build and run on a device or simulator running **iOS 15.6 or later**.
 
