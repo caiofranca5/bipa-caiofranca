@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "80F432C8-32EF-4773-96DB-EEB95EF28D6C",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:bipa-caiofranca.xcodeproj",
+        "identifier" : "3DCC25AD2D5152EF00A7AF49",
+        "name" : "bipa-caiofrancaTests"
+      }
+    }
+  ],
+  "version" : 1
+}

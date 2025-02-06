@@ -6,7 +6,6 @@
 //
 
 struct Node: Decodable {
-    
     let publicKey: String?
     let alias: String?
     let channels: Double?
@@ -26,5 +25,4 @@ struct Node: Decodable {
         case city
         case country
     }
-    
 }
