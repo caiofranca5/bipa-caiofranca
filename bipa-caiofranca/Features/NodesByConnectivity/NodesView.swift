@@ -15,13 +15,13 @@ struct NodesByConnectivityView: View {
             Group {
                 if let errorMessage = viewModel.errorMessage {
                     ContentUnavailableView {
-                        Label("Nenhum Resultado", systemImage: "exclamationmark.triangle")
+                        Label("No Results", systemImage: "exclamationmark.triangle")
                     } description: {
                         Text(errorMessage)
                     }
                 } else {
                     if viewModel.nodes.isEmpty {
-                        ProgressView("Carregando...")
+                        ProgressView("Loading...")
                     } else {
                         List(viewModel.nodes, id: \.publicKey) { node in
                             Section(header: Text(node.alias ?? "")) {
@@ -60,7 +60,7 @@ fileprivate struct NodeRow: View {
                 })
             }, label: {
                 NodeRowItem(
-                    title: "Chave Pública",
+                    title: "Public Key",
                     value: node.publicKey ?? ""
                 )
             })
@@ -68,35 +68,35 @@ fileprivate struct NodeRow: View {
             Divider()
 
             NodeRowItem(
-                title: "Canais",
+                title: "Channels",
                 value: "\(node.channels ?? 0)"
             )
             
             Divider()
 
             NodeRowItem(
-                title: "Capacidade",
+                title: "Capacity",
                 value: viewModel.nodeCapacityInBTC(node)
             )
             
             Divider()
 
             NodeRowItem(
-                title: "Primeira Aparição",
+                title: "First Seen",
                 value: viewModel.nodeDate(node.firstSeen)
             )
             
             Divider()
 
             NodeRowItem(
-                title: "Atualizado em",
+                title: "Updated at",
                 value: viewModel.nodeDate(node.updatedAt)
             )
             
             Divider()
 
             NodeRowItem(
-                title: "Localização",
+                title: "Location",
                 value: viewModel.nodeLocation(node)
             )
         }
