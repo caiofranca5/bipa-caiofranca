@@ -23,7 +23,6 @@ final class NodesByConnectivityViewModel: ObservableObject {
             self.nodes = try await networkManager.request(endpoint: Mempool.nodesByConnectivity)
         } catch let error as NetworkError {
             self.errorMessage = error.description
-            print(error.description)
         } catch {
             self.errorMessage = error.localizedDescription
         }
@@ -50,6 +49,17 @@ final class NodesByConnectivityViewModel: ObservableObject {
         let country = node.country ?? NodeLocation(ptBR: "País Desconhecidu", en: "Unknown Country")
         
         return "\(localizedName(city)), \(localizedName(country))"
+    }
+    
+    func nodeDate(_ unix: Int?) -> String {
+        guard let seconds = unix else { return "-" }
+        let date = Date(timeIntervalSince1970: Double(seconds))
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = DateFormatter.Style.short
+        dateFormatter.dateStyle = DateFormatter.Style.medium
+        dateFormatter.timeZone = .current
+        let localDate = dateFormatter.string(from: date)
+        return localDate
     }
     
 }

@@ -11,153 +11,114 @@ struct NodesByConnectivityView: View {
     @StateObject var viewModel = NodesByConnectivityViewModel(networkManager: NetworkManager())
     
     var body: some View {
-        NavigationStack(root: {
-            List(viewModel.nodes, id: \.publicKey) { node in
-                Section(header: Text(node.alias ?? "")) {
-                    NodeRow(viewModel: self.viewModel, node: node)
+        NavigationStack {
+            Group {
+                if let errorMessage = viewModel.errorMessage {
+                    ContentUnavailableView {
+                        Label("Nenhum Resultado", systemImage: "exclamationmark.triangle")
+                    } description: {
+                        Text(errorMessage)
+                    }
+                } else {
+                    if viewModel.nodes.isEmpty {
+                        ProgressView("Carregando...")
+                    } else {
+                        List(viewModel.nodes, id: \.publicKey) { node in
+                            Section(header: Text(node.alias ?? "")) {
+                                NodeRow(viewModel: viewModel, node: node)
+                            }
+                        }
+                        .listStyle(.insetGrouped)
+                        .refreshable {
+                            await viewModel.fetchNodes()
+                        }
+                    }
                 }
-    
             }
             .navigationTitle("Nodes")
             .task {
                 await viewModel.fetchNodes()
             }
-        })
+        }
     }
 }
 
 fileprivate struct NodeRow: View {
     @ObservedObject var viewModel: NodesByConnectivityViewModel
     let node: Node
+
+    var body: some View {
+        VStack(spacing: 14) {
+            NavigationLink(destination: {
+                List(content: {
+                    Section(header: Text("Public Key")) {
+                        Text(node.publicKey ?? "")
+                            .font(.system(size: 17, weight: .regular))
+                            .foregroundColor(.primary)
+                    }
+                    
+                })
+            }, label: {
+                NodeRowItem(
+                    title: "Chave Pública",
+                    value: node.publicKey ?? ""
+                )
+            })
+            
+            Divider()
+
+            NodeRowItem(
+                title: "Canais",
+                value: "\(node.channels ?? 0)"
+            )
+            
+            Divider()
+
+            NodeRowItem(
+                title: "Capacidade",
+                value: viewModel.nodeCapacityInBTC(node)
+            )
+            
+            Divider()
+
+            NodeRowItem(
+                title: "Primeira Aparição",
+                value: viewModel.nodeDate(node.firstSeen)
+            )
+            
+            Divider()
+
+            NodeRowItem(
+                title: "Atualizado em",
+                value: viewModel.nodeDate(node.updatedAt)
+            )
+            
+            Divider()
+
+            NodeRowItem(
+                title: "Localização",
+                value: viewModel.nodeLocation(node)
+            )
+        }
+    }
+}
+
+fileprivate struct NodeRowItem: View {
+    let title: String
+    let value: String
     
     var body: some View {
-        VStack(spacing: 14, content: {
-//            Text(node.alias ?? "")
-//                .frame(maxWidth: .infinity, alignment: .leading)
-//                .font(.system(size: 22, weight: .semibold))
-            
-            VStack(alignment: .leading, spacing: 8, content: {
-                Label {
-                    Text("Chave Pública")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "key.horizontal.fill")
-                        .foregroundColor(.yellow)
-                }
-                //.labelStyle(.titleOnly)
-                .font(.system(size: 17, weight: .medium))
+        HStack(alignment: .center, spacing: 8) {
+            Text(title)
+                .font(.system(size: 17, weight: .regular))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundColor(.primary)
+
+            Text(value)
+                .font(.system(size: 17, weight: .regular))
                 .lineLimit(1)
-                
-                Text(node.publicKey ?? "")
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            })
-            
-            Divider()
-            
-            VStack(alignment: .leading, spacing: 8, content: {
-                Label {
-                    Text("Canais")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "link")
-                        .foregroundColor(.gray)
-                }
-                .labelStyle(.titleOnly)
-                .font(.system(size: 17, weight: .medium))
-                .lineLimit(1)
-                
-                Text("\(node.channels ?? 0.0)")
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundColor(.secondary)
-            })
-            
-            Divider()
-            
-            VStack(alignment: .leading, spacing: 8, content: {
-                Label {
-                    Text("Capacidade")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "bitcoinsign")
-                        .foregroundColor(.orange)
-                }
-                .labelStyle(.titleOnly)
-                .font(.system(size: 17, weight: .medium))
-                .lineLimit(1)
-                
-                Text(viewModel.nodeCapacityInBTC(node))
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundColor(.secondary)
-            })
-            
-            Divider()
-            
-            VStack(alignment: .leading, spacing: 8, content: {
-                Label {
-                    Text("Primeira Aparição")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "calendar.badge.plus")
-                        .symbolRenderingMode(.multicolor)
-                }
-                .labelStyle(.titleOnly)
-                .font(.system(size: 17, weight: .medium))
-                .lineLimit(1)
-                
-                Text("17/12/2025")
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundColor(.secondary)
-                    
-            })
-            
-            Divider()
-            
-            VStack(alignment: .leading, spacing: 8, content: {
-                Label {
-                    Text("Atualizado em")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "calendar.badge.clock")
-                        .foregroundColor(.primary)
-                }
-//                .labelStyle(.titleOnly)
-                .font(.system(size: 17, weight: .medium))
-                .lineLimit(1)
-                
-                Text("17/12/2025")
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundColor(.secondary)
-                    
-            })
-            
-            Divider()
-            
-            VStack(alignment: .leading, spacing: 8, content: {
-                Label {
-                    Text("Localização")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "globe.americas.fill")
-                        .foregroundColor(.primary)
-                }
-//                .labelStyle(.titleOnly)
-                .font(.system(size: 17, weight: .semibold))
-                .lineLimit(1)
-                
-                Text(viewModel.nodeLocation(node))
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundColor(.secondary)
-                    
-            })
-        })
+                .foregroundColor(.secondary)
+        }
     }
 }
 
